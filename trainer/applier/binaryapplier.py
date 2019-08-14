@@ -1,6 +1,7 @@
-import numpy as np
-from collections import Counter
 import random
+from collections import Counter
+
+import numpy as np
 
 
 # 没有查python有没有抽象类的概念
@@ -34,7 +35,7 @@ class LinearApplier(BinaryApplier):
 
     def predict(self, x: list) -> int:
         x = np.array([*x, 1])
-        r = self.__w.dot(x)
+        r = self.w.dot(x)
         return 1 if r > 0.5 else 0
 
 
@@ -45,7 +46,7 @@ class LogisticApplier(BinaryApplier):
 
     def predict(self, x: list) -> int:
         x = np.array([*x, 1])
-        r = self.__w.dot(x)
+        r = self.w.dot(x)
         return 1 if r > 1 else 0
 
 

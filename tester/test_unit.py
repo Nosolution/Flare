@@ -1,5 +1,6 @@
 from typing import Union
-from trainer.binaryapplier import BinaryApplier, MultiClassApplier
+
+from trainer.applier.binaryapplier import BinaryApplier, MultiClassApplier
 
 """
 测试单元，完成测试工作
@@ -15,16 +16,16 @@ class TestUnit(object):
         self.__refresh()
         self.binary_flag = False  # 是否为二分类任务
         self.f1_flag = False  # 是否输出F1指标(仅在开启二分类后有效)
-        self.f1_preference = 1  # 查准率/查全率的偏好比率
+        self.__f1_preference = 1  # 查准率/查全率的偏好比率
 
     @property
     def f1_preference(self) -> float:
-        return self.f1_preference
+        return self.__f1_preference
 
     @f1_preference.setter
     def f1_preference(self, value: float) -> None:
         assert value > 0
-        self.f1_preference = value
+        self.__f1_preference = value
 
     def __refresh(self) -> None:
         self.t = 0  # 预测正确实例数量
@@ -83,6 +84,6 @@ class TestUnit(object):
             r = params['tp'] / (params['tp'] + params['fn'])
             print("The precise rate is: {}, and the recall rate is: {}".format(p, r))
             if self.f1_flag:
-                beta = self.f1_preference
+                beta = self.__f1_preference
                 f1 = ((1 + beta) ** 2 * p * r) / ((beta ** 2 * p) + r)
                 print("F1 is: {}".format(f1))

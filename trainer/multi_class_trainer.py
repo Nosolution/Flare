@@ -1,13 +1,14 @@
 from algorithm.classify import binary_real as br, multi_real_wrapper as ss
-from trainer.binaryapplier import MultiClassApplier
 from auxiliary.helper import *
+from trainer.applier.binaryapplier import MultiClassApplier
 
 """
 多分类实数分类器训练模块, 没必要写成类就直接写了个方法
 """
 
 
-def train(train_set: list, algorithm: int, strategy: int = OvR, debug_mode: bool = False, **kwargs) -> MultiClassApplier:
+def train(train_set: list, algorithm: int, strategy: int = OvR, debug_mode: bool = False,
+          **kwargs) -> MultiClassApplier:
     """
     二分类实数分类器训练函数
     :param train_set: 训练集, 要求格式要求格式[(x_1,x_2,x_3,...,label),...,(x_1,x_2,x_3,...,label)]

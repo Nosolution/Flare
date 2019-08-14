@@ -1,6 +1,6 @@
 import copy
 
-from trainer.binaryapplier import *
+from trainer.applier.binaryapplier import *
 
 """
 最基本的二分类实数分类器
@@ -21,9 +21,10 @@ def linear_regression(train_set: list, debug_mode: bool = False, **kwargs) -> Bi
     """
 
     assert len(train_set) > 0
-    X = np.array(list(map(lambda x: x[:-1], train_set)))
+    X = np.array(list(map(lambda x: np.array([*(x[:-1]), 1]), train_set)))
     Y = np.array(list(map(lambda x: x[-1], train_set))).reshape(len(train_set), 1)
     w = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(Y)
+    w = w.flatten()
     if debug_mode:
         print('W is: {}'.format(w))
     return LinearApplier(w)
@@ -115,6 +116,7 @@ def logistic_regression(train_set: list,
             step /= 2
         if debug_mode:
             print('total detect_count is: {}.'.format(detect_count))
+    w = w.flatten()
     if debug_mode:
         print('final w is: {}'.format(w))
 
@@ -159,6 +161,7 @@ def lda(train_set: list, debug_mode: bool = False, **kwargs) -> BinaryApplier:
     sw = sw1 + sw0
 
     w = np.linalg.inv(sw).dot(u0.reshape(param_len, 1) - u1.reshape(param_len, 1))
+    w = w.flatten()
     if debug_mode:
         print('u0 is:{}, u1 is: {}.\nsw is: {}, w is: {}'.format(u0, u1, sw, w))
     return LDAApplier([*(w.reshape(param_len)), u0, u1])
