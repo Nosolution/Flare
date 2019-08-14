@@ -1,6 +1,6 @@
 import copy
 
-from trainer.applier.binaryapplier import *
+from applier.binaryapplier import *
 
 """
 最基本的二分类实数分类器

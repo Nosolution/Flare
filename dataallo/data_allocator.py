@@ -1,5 +1,6 @@
 import copy
 import random
+from typing import List
 
 import math
 
@@ -16,7 +17,8 @@ class DataHandler(object):
     DataHandler类，负责数据的读取与分割
     """
 
-    def __init__(self, path: str = "", split_token: str = ",", dtype: int = any_type) -> None:
+    def __init__(self, path: str = "", split_token: str = ",", dtype: int = any_type,
+                 del_col: List[int] = None) -> None:
         """
         初始化DataHandler实例
         :param path: 数据集所在路径
@@ -27,9 +29,11 @@ class DataHandler(object):
         self.data_set = []
         self.split_token = split_token
         self.dtype = dtype
+        self.del_col = None
         self.__load()
 
-    def refresh_data_set(self, path: str = "", split_token: str = ",", dtype: int = any_type) -> None:
+    def refresh_data_set(self, path: str = "", split_token: str = ",", dtype: int = any_type,
+                         del_col: List[int] = None) -> None:
         """
         刷新数据，与实例化该类的逻辑类似，读入新的数据集
         :param path: 数据集所在路径
@@ -41,6 +45,7 @@ class DataHandler(object):
         self.data_set = []
         self.split_token = split_token
         self.dtype = dtype
+        self.del_col = None
         self.__load()
 
     def __load(self) -> None:
@@ -48,12 +53,17 @@ class DataHandler(object):
         读取数据, 不读取第一行
         """
         self.data_set = []
-        with open(self.data_path) as f:
+        with open(self.data_path, encoding="UTF-8") as f:
             f.readline()
             lines = f.readlines()
             for line in lines:
                 line = line.strip('\n')
-                self.data_set.append(line.split(self.split_token))
+                attrs = line.split(self.split_token)
+                if self.del_col:
+                    v = len(attrs)
+                    keep_col = list(filter(lambda i: i not in self.del_col, range(v)))
+                    attrs = list(map(lambda x: list(map(lambda j: x[j], keep_col)), attrs))
+                self.data_set.append(attrs)
 
         def cast_func(u):
             return u

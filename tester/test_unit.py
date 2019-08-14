@@ -1,6 +1,7 @@
 from typing import Union
 
-from trainer.applier.binaryapplier import BinaryApplier, MultiClassApplier
+from applier.binaryapplier import BinaryApplier
+from applier.multiapplier import MultiClassApplier
 
 """
 测试单元，完成测试工作

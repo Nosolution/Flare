@@ -2,8 +2,9 @@ import copy
 from itertools import permutations
 from typing import Callable, Any
 
+from applier.binaryapplier import *
+from applier.multiapplier import *
 from auxiliary.helper import *
-from trainer.applier.binaryapplier import *
 
 """
 多类别实数分类器，通过组合多个二分类实数分类器进行决策
