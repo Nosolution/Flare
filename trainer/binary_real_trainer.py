@@ -17,9 +17,9 @@ def train(train_set: list, algorithm: int, debug_mode: bool = False, **kwargs) -
     """
     ts = list(map(lambda data: list(map(float, data)), train_set))
     if algorithm == linear_regression:
-        return br.linear_regression(ts, debug_mode, **kwargs)
+        return br.linear_regression(ts, debug_mode=debug_mode, **kwargs)
     elif algorithm == logistic_regression:
-        return br.logistic_regression(ts, debug_mode, **kwargs)
+        return br.logistic_regression(ts, debug_mode=debug_mode, **kwargs)
     elif algorithm == lda:
-        return br.lda(ts, debug_mode, **kwargs)
+        return br.lda(ts, debug_mode=debug_mode, **kwargs)
     return BinaryApplier([])

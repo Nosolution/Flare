@@ -21,5 +21,5 @@ for folds in folds_list:
         for j in range(c):
             if j != i:
                 train_set.extend(folds[j])
-        applier = brt.train(train_set, algorithm=brt.linear_regression)
+        applier = brt.train(train_set, algorithm=brt.linear_regression, debug_mode=True)
         test.test(applier, test_set)

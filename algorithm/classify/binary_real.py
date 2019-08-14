@@ -47,7 +47,7 @@ def likelihood(w: list, data_set: list) -> float:
             b = np.log(1 + np.exp(wx))
         except FloatingPointError:
             b = wx
-        res += -y * wx + b
+        res += (-y * wx + b)
     return res
 
 
@@ -68,12 +68,12 @@ def nega_llh_gradient(w: list, data_set: list) -> np.ndarray:
             b = 1 / (1 + np.exp(w.dot(x)))
         except FloatingPointError:
             b = 0
-        res += x * (y - 1 + b)
+        res += (x * (y - 1 + b))
         return res
 
 
 def logistic_regression(train_set: list,
-                        step: float = 1,
+                        step: float = 1.0,
                         min_step: int = 0.00001,
                         max_round: int = 1000,
                         max_detect: int = 500,
@@ -164,4 +164,4 @@ def lda(train_set: list, debug_mode: bool = False, **kwargs) -> BinaryApplier:
     w = w.flatten()
     if debug_mode:
         print('u0 is:{}, u1 is: {}.\nsw is: {}, w is: {}'.format(u0, u1, sw, w))
-    return LDAApplier([*(w.reshape(param_len)), u0, u1])
+    return LDAApplier([w.reshape(param_len), u0, u1])

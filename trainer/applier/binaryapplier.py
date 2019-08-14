@@ -59,8 +59,8 @@ class LDAApplier(BinaryApplier):
         x = np.array(x)
         u0 = self.w[-2]
         u1 = self.w[-1]
-        r = self.w.dot(x)
-        return 1 if abs(self.w.dot(u1) - r) < abs(self.w.dot(u0) - r) else 0
+        r = self.w[0].dot(x)
+        return 1 if abs(self.w[0].dot(u1) - r) < abs(self.w[0].dot(u0) - r) else 0
 
 
 class MultiClassApplier(object):
