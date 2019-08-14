@@ -1,6 +1,6 @@
 import copy
 from itertools import permutations
-from typing import Callable
+from typing import Callable, Any
 
 from auxiliary.helper import *
 from trainer.applier.binaryapplier import *
@@ -10,7 +10,7 @@ from trainer.applier.binaryapplier import *
 """
 
 
-def ovo_train(train_set: list, algorithm: Callable[[list], BinaryApplier],
+def ovo_train(train_set: list, algorithm: Callable[[list, bool, Any], BinaryApplier],
               debug_mode: bool = False, **kwargs) -> MultiClassApplier:
     """
     一对一训练，为每两个类别生成一个分类器，总共有n(n-1)个分类器
@@ -29,9 +29,9 @@ def ovo_train(train_set: list, algorithm: Callable[[list], BinaryApplier],
     for p in perm:
         # 最后两个参数为正类与反类代表的真正种类
         if debug_mode:
-            print('current positive class is: {}, negative class is: {}'.format(train_set[indices[p[0]]][-1],
-                                                                                train_set[indices[p[1]]][-1]))
-        classifier = [0, train_set[indices[p[0]]][-1], train_set[indices[p[1]]][-1]]
+            print('current positive class is: {}, negative class is: {}'.format(train_set[indices[p[1]]][-1],
+                                                                                train_set[indices[p[0]]][-1]))
+        classifier = [0, train_set[indices[p[1]]][-1], train_set[indices[p[0]]][-1]]
         set0 = train_set[indices[p[0]]: indices[p[0] + 1]]
         set1 = train_set[indices[p[1]]: indices[p[1] + 1]]
         # 重设标志，便于二分类训练
@@ -47,7 +47,7 @@ def ovo_train(train_set: list, algorithm: Callable[[list], BinaryApplier],
     return OvOApplier(classifiers)
 
 
-def ovr_train(train_set: list, algorithm: Callable[[list], BinaryApplier],
+def ovr_train(train_set: list, algorithm: Callable[[list, bool, Any], BinaryApplier],
               debug_mode: bool = False, **kwargs) -> MultiClassApplier:
     """
     一对多训练，以一个类别作为正类，其他类别作为反类来训练，总共有n个分类器
@@ -60,24 +60,24 @@ def ovr_train(train_set: list, algorithm: Callable[[list], BinaryApplier],
     if debug_mode:
         print('OvR training:\n class_num is: {}'.format(class_num))
     indices = get_class_indices(train_set)
-    # 所有标志都设为1，待某个类设为正类后在设为0
+    # 所有标志都设为0，待某个类设为正类后在设为1
     d = copy.deepcopy(train_set)
     for data in d:
-        data[-1] = 1
+        data[-1] = 0
     classifiers = []  # 返回格式 : [[w1, t1], [w2, t2],...,[wn, tn]]
     for i in range(1, class_num + 1):
         if debug_mode:
             print('current positive class is: {}'.format(train_set[indices[i - 1]][-1]))
         for j in range(indices[i - 1], indices[i]):
-            d[j][-1] = 0
-        applier = algorithm(copy.deepcopy(d), debug_mode=debug_mode, **kwargs)
-        for j in range(indices[i - 1], indices[i]):
             d[j][-1] = 1
-        classifiers.append([applier, train_set[i - 1][-1]])
+        applier = algorithm(d, debug_mode=debug_mode, **kwargs)
+        for j in range(indices[i - 1], indices[i]):
+            d[j][-1] = 0
+        classifiers.append([applier, train_set[indices[i - 1]][-1]])
     return OvRApplier(classifiers)
 
 
-def mvm_train(train_set: list, algorithm: Callable[[list, bool], BinaryApplier],
+def mvm_train(train_set: list, algorithm: Callable[[list, bool, Any], BinaryApplier],
               debug_mode: bool = False, **kwargs) -> MultiClassApplier:
     """
     多对多训练，以一些类别作为正类，另外一些类别作为反类来训练，总分类器个数依赖于类别数量，通过对比最终生成的二元码序列与代表各类的纠错码的海明距离来进行判断

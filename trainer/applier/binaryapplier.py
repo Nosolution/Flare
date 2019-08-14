@@ -23,9 +23,21 @@ class BinaryApplier(object):
         assert (isinstance(value, list) or isinstance(value, np.ndarray))
         self.__w = np.array(value)
 
+    def confidence(self, x: list):
+        """
+        返回样例被分为正例的置信度
+        :param x: 被测试的样例
+        :return: 样例被分类为正类的置信度
+        """
+        return 0.5
+
     def predict(self, x: list) -> int:
-        # 基本方法，各子类实现自己的决策过程
-        return 0
+        """
+        预测样例的分类
+        :param x: 被测试的样例
+        :return: 返回1，如果样例被预测为1的置信度更大，反之返回0
+        """
+        return 1
 
 
 class LinearApplier(BinaryApplier):
@@ -33,9 +45,13 @@ class LinearApplier(BinaryApplier):
     线性回归模型的应用器
     """
 
-    def predict(self, x: list) -> int:
+    def confidence(self, x: list):
         x = np.array([*x, 1])
         r = self.w.dot(x)
+        return r
+
+    def predict(self, x: list) -> int:
+        r = self.confidence(x)
         return 1 if r > 0.5 else 0
 
 
@@ -44,9 +60,13 @@ class LogisticApplier(BinaryApplier):
     对率回归模型的应用器
     """
 
-    def predict(self, x: list) -> int:
+    def confidence(self, x: list):
         x = np.array([*x, 1])
         r = self.w.dot(x)
+        return r
+
+    def predict(self, x: list) -> int:
+        r = self.confidence()
         return 1 if r > 1 else 0
 
 
@@ -55,10 +75,17 @@ class LDAApplier(BinaryApplier):
     线性判别分析模型的应用器
     """
 
+    def confidence(self, x: list):
+        x = np.array(x)
+        u0 = self.w[-1]
+        u1 = self.w[-2]
+        r = self.w[0].dot(x)
+        return abs(self.w[0].dot(u1) - r) / abs(self.w[0].dot(u0) - r)
+
     def predict(self, x: list) -> int:
         x = np.array(x)
-        u0 = self.w[-2]
-        u1 = self.w[-1]
+        u0 = self.w[-1]
+        u1 = self.w[-2]
         r = self.w[0].dot(x)
         return 1 if abs(self.w[0].dot(u1) - r) < abs(self.w[0].dot(u0) - r) else 0
 
@@ -91,26 +118,20 @@ class OvOApplier(MultiClassApplier):
         while c[i][1] == c[i - 1][1]:
             i += 1
         # 随机选取一种结果
-        return c[random.randint[0, i - 1]][0]
+        return c[random.randint(0, i - 1)][0]
 
 
 class OvRApplier(MultiClassApplier):
     """
-    一对多多分类师叔分类模型应用器
+    一对多多分类实数分类模型应用器
     """
 
     def predict(self, x: list) -> int:
         predictions = []
         for model in self.models:
-            predictions.append(model[-1] if model[0].predict(x) == 0 else -1 * model[-1])
-        c = list(filter(lambda y: y > 0, predictions))
-        # TODO OvR需要实现置信度
-        if len(c) == 0:
-            return 0
-        elif len(c) == 1:
-            return c[0]
-        else:
-            return c[random[0, len(c) - 1]]
+            predictions.append((model[0].confidence(x), model[-1]))
+        # 根据置信度排序选取最高类别
+        return sorted(predictions, key=lambda y: y[0], reverse=True)[0][1]
 
 
 class MvMApplier(MultiClassApplier):
