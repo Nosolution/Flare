@@ -68,6 +68,13 @@ class DataHandler(object):
             for i in range(len(self.data_set)):
                 self.data_set[i] = list(map(cast_func, self.data_set[i]))
 
+    def get_data_set(self):
+        """
+        直接返回读取到的数据集
+        :return: 实例已读取的数据集
+        """
+        return self.data_set
+
     def split_tt_sets(self, train_ratio: float) -> (list, list):
         """
         分配训练集与测试集
