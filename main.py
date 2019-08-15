@@ -31,8 +31,8 @@ def sample1():
 
 
 def sample2():
-    data_path = "F:/Project/Flare/watermelon2.txt"
-    dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.categorical, del_col=[0])
+    data_path = "watermelon3.txt"
+    dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.categorical)
     data_set = dh.get_data_set()
     applier = decision_tree_trainer.train(train_set=data_set)
     tu = tester.TestUnit()
