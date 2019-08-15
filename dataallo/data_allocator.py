@@ -71,15 +71,38 @@ class DataHandler(object):
         def cast_func(u):
             return u
 
+        def map_categorical(data_set: list):
+            """
+            将类别属性映射为0,1序列
+            :param data_set: 待使用的数据集
+            :return: 映射后的数据集
+            """
+            m = len(data_set[0]) - 1
+            attr_values = []
+            res_set = []
+            for k in range(m):
+                attr_values.append(sorted(list(set(list(map(lambda x: x[k], data_set))))))
+            for data in data_set:
+                mapping = []
+                for k in range(m):
+                    values = attr_values[k]
+                    mapping.extend(
+                        list(map(lambda j: 1 if data[k] == values[j] else 0, range(len(values)))))
+                mapping.append(data[-1])
+                res_set.append(mapping)
+            return res_set
+
         if self.dtype == integer:
             cast_func = int
         elif self.dtype == real:
             cast_func = float
-        # TODO 属性数据类型为categorical时的处理
 
         if self.dtype == integer or self.dtype == real:
             for i in range(len(self.data_set)):
                 self.data_set[i] = list(map(cast_func, self.data_set[i]))
+
+        if self.dtype == categorical:
+            self.data_set = map_categorical(self.data_set)
 
     def get_data_set(self):
         """
@@ -145,6 +168,12 @@ class DataHandler(object):
 
         return folds_list
 
-    def bootstrap(self):
-        # TODO 待实现自助法
-        pass
+    def bootstrap(self, k: int = 1000):
+        """
+        自助法，随机挑选原数据集中的数据作为新数据集返回
+        :param k: 随机挑选次数
+        :return: 新数据集
+        """
+        n = len(self.data_set)
+        res = list(map(lambda i: random.randint(0, n - 1), range(k)))
+        return list(map(lambda i: self.data_set[i], set(res)))  # 去重返回

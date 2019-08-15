@@ -32,7 +32,7 @@ def sample1():
 
 def sample2():
     data_path = "watermelon3.txt"
-    dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.categorical)
+    dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.any_type)
     data_set = dh.get_data_set()
     applier = decision_tree_trainer.train(train_set=data_set)
     tu = tester.TestUnit()
