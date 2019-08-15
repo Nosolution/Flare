@@ -4,14 +4,6 @@ from collections import Counter
 一些各模块需要使用到的函数
 """
 
-OvO = 1
-OvR = 2
-MvM = 3
-
-linear_regression = 11
-logistic_regression = 12
-lda = 13
-
 
 def count_class_num(data_set: list) -> int:
     """

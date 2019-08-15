@@ -2,7 +2,7 @@ from collections import Counter
 
 import numpy as np
 
-from applier.multiapplier import MultiClassApplier
+from applier import MultiClassApplier
 
 """
 决策树实现模块
@@ -11,6 +11,8 @@ from applier.multiapplier import MultiClassApplier
 inf_ent_gain = 21
 info_gain_ratio = 22
 gini_inx = 23
+
+__all__ = ['generate_int_tree', 'IntTreeNode', 'inf_ent_gain', 'info_gain_ratio', 'gini_inx']
 
 
 def __inf_entropy(data_set: np.ndarray) -> float:
@@ -104,6 +106,14 @@ class IntTreeNode:
             return self.label
         else:
             return self.children[x[self.ai]].decide(x)
+
+    def print(self, layer: int = 1):
+        if not self.children:
+            print("  " * layer + "label: {}".format(self.label))
+        else:
+            for item in self.children.items():
+                print("  " * layer + "on ai:{}={}".format(self.ai, item[0]))
+                item[1].print(layer + 1)
 
 
 def generate_int_tree(train_set: list, attrs: dict, strat: int) -> MultiClassApplier:

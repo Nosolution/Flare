@@ -1,11 +1,12 @@
 from typing import Union
 
-from applier.binaryapplier import BinaryApplier
-from applier.multiapplier import MultiClassApplier
+from applier import BinaryApplier
+from applier import MultiClassApplier
 
 """
 测试单元，完成测试工作
 """
+__all__ = ['TestUnit']
 
 
 class TestUnit(object):

@@ -1,6 +1,9 @@
 import copy
+import random
 from itertools import permutations
 from typing import Callable, Any
+
+import numpy as np
 
 from applier.binaryapplier import *
 from applier.multiapplier import *
@@ -9,6 +12,7 @@ from auxiliary.helper import *
 """
 多类别实数分类器，通过组合多个二分类实数分类器进行决策
 """
+__all__ = ['ovo_train', 'ovr_train', 'mvm_train']
 
 
 def ovo_train(train_set: list, algorithm: Callable[[list, bool, Any], BinaryApplier],

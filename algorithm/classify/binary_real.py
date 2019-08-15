@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from applier.binaryapplier import *
 
 """
@@ -9,6 +11,8 @@ from applier.binaryapplier import *
 
 # 设定为有warning时抛出
 np.seterr(over='raise')
+
+__all__ = ['linear_regression', 'logistic_regression', 'lda']
 
 
 def linear_regression(train_set: list, debug_mode: bool = False, **kwargs) -> BinaryApplier:
@@ -30,7 +34,7 @@ def linear_regression(train_set: list, debug_mode: bool = False, **kwargs) -> Bi
     return LinearApplier(w)
 
 
-def likelihood(w: np.ndarray, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+def __likelihood(w: np.ndarray, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     """
     对数似然的估计函数, 算式: l(<omega>) = sum_{i=1}^{m}(-y_i<omega>x_i) + ln(1+e^{<omega>x_i}), 其中x_i, y_i为第i个实例的数据与标记.
     :param w: <omega>
@@ -41,7 +45,7 @@ def likelihood(w: np.ndarray, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return np.sum(-Y * np.dot(X, w) + np.log(1 + np.exp(np.dot(X, w))))
 
 
-def nega_llh_gradient(w: list, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+def __nega_llh_gradient(w: list, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     """
     对数似然的梯度负值, 算式:-grad(l(<omega>)) = sum_{i=1}^{m}(x_i(y_i-p_1(x_i;<omega>))),
     其中p_1(x_i;<omega>) = 1-1/(1+e^{<omega>x_i})
@@ -84,11 +88,11 @@ def logistic_regression(train_set: list,
     # 开始训练
     while round_count < max_round and step > min_step:
         round_count += 1
-        origin_llh = likelihood(w, X, Y)
+        origin_llh = __likelihood(w, X, Y)
         origin_w = w
         detect_count = 0
 
-        delta = nega_llh_gradient(w, X, Y)
+        delta = __nega_llh_gradient(w, X, Y)
 
         if debug_mode:
             print('current round_count is: {}, llh is:{},\nw is:{}.'.format(round_count, origin_llh, origin_w))
@@ -97,7 +101,7 @@ def logistic_regression(train_set: list,
         while detect_count < max_detect and step > min_step:
             detect_count += 1
             w = origin_w + step * delta
-            if likelihood(w, X, Y) <= origin_llh:
+            if __likelihood(w, X, Y) <= origin_llh:
                 break
             step /= 2
         if debug_mode:

@@ -1,6 +1,6 @@
 from algorithm.classify import binary_real as br
-from applier.binaryapplier import BinaryApplier
-from auxiliary.helper import *
+from applier import BinaryApplier
+from . import *
 
 """
 二分类实数分类器训练模块, 没必要写成类就直接写了个方法

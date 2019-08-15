@@ -11,6 +11,8 @@ integer = 1  # 整数型
 real = 2  # 实数型
 categorical = 3  # 类别型
 
+__all__ = ['DataHandler', 'any_type', 'integer', 'real', 'categorical']
+
 
 class DataHandler(object):
     """
@@ -29,7 +31,7 @@ class DataHandler(object):
         self.data_set = []
         self.split_token = split_token
         self.dtype = dtype
-        self.del_col = None
+        self.del_col = del_col
         self.__load()
 
     def refresh_data_set(self, path: str = "", split_token: str = ",", dtype: int = any_type,
@@ -39,13 +41,14 @@ class DataHandler(object):
         :param path: 数据集所在路径
         :param split_token: 属性间分隔符
         :param dtype: 属性的数据类型，用于属性的预处理
+        :param del_col: 选择删除的属性下标
         :return:
         """
         self.data_path = path
         self.data_set = []
         self.split_token = split_token
         self.dtype = dtype
-        self.del_col = None
+        self.del_col = del_col
         self.__load()
 
     def __load(self) -> None:
@@ -62,7 +65,7 @@ class DataHandler(object):
                 if self.del_col:
                     v = len(attrs)
                     keep_col = list(filter(lambda i: i not in self.del_col, range(v)))
-                    attrs = list(map(lambda x: list(map(lambda j: x[j], keep_col)), attrs))
+                    attrs = list(map(lambda j: attrs[j], keep_col))
                 self.data_set.append(attrs)
 
         def cast_func(u):

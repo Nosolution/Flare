@@ -1,5 +1,7 @@
 import numpy as np
 
+__all__ = ['BinaryApplier', 'LinearApplier', 'LogisticApplier', 'LDAApplier']
+
 
 # 没有查python有没有抽象类的概念
 class BinaryApplier(object):

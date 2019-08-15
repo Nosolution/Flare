@@ -1,5 +1,5 @@
+import tester
 from dataallo import data_allocator
-from tester import test_unit
 from trainer import binary_real_trainer as brt
 from trainer import decision_tree_trainer
 
@@ -18,7 +18,7 @@ def sample1():
     path = "watermelon3.txt"
     handler = data_allocator.DataHandler(path, dtype=data_allocator.real)
     folds_list = handler.split_folds(c, k)
-    tu = test_unit.TestUnit()
+    tu = tester.TestUnit()
     for folds in folds_list:
         for i in range(c):
             train_set = []
@@ -35,10 +35,10 @@ def sample2():
     dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.categorical, del_col=[0])
     data_set = dh.get_data_set()
     applier = decision_tree_trainer.train(train_set=data_set)
-    tu = test_unit.TestUnit()
+    tu = tester.TestUnit()
     tu.test(applier, data_set)
 
 
-if __name__ == "__main__":
-    sample1()
-    sample2()
+# if __name__ == "__main__":
+sample1()
+sample2()

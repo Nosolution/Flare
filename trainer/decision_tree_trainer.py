@@ -1,12 +1,12 @@
 from collections import Counter
 
-from algorithm.classify import decisiontree
+from algorithm import classify
 
 
-def train(train_set: list, attrs: dict = None, strategy: int = decisiontree.inf_ent_gain):
+def train(train_set: list, attrs: dict = None, strategy: int = classify.inf_ent_gain):
     if not attrs:
         attrs = get_all_attrs(train_set)
-    return decisiontree.generate_int_tree(train_set, attrs, strategy)
+    return classify.generate_int_tree(train_set, attrs, strategy)
 
 
 def get_all_attrs(data_set: list) -> dict:
