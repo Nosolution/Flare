@@ -31,14 +31,25 @@ def sample1():
 
 
 def sample2():
-    data_path = "watermelon3.txt"
-    dh = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.any_type)
-    data_set = dh.get_data_set()
+    data_path = "watermelon2.txt"
+    handler = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.any_type)
+    data_set = handler.get_data_set()
     applier = decision_tree_trainer.train(train_set=data_set)
     tu = tester.TestUnit()
     tu.test(applier, data_set)
 
 
+def sample3():
+    data_path = "watermelon2.txt"
+    handler = data_allocator.DataHandler(path=data_path, split_token=", ", dtype=data_allocator.any_type, del_col=[0])
+    train_set, test_set = handler.split_tt_sets(0.7)
+    applier = decision_tree_trainer.train(train_set=train_set, preprune_test_set=test_set)
+    applier.root.print()
+    tu = tester.TestUnit()
+    tu.test(applier, handler.get_data_set())
+
+
 # if __name__ == "__main__":
-sample1()
-sample2()
+# sample1()
+# sample2()
+sample3()
