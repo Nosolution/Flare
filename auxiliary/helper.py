@@ -1,4 +1,5 @@
 from collections import Counter
+import math
 
 """
 一些各模块需要使用到的函数
@@ -30,3 +31,7 @@ def get_class_indices(data_set: list) -> list:
                 break
     indices.append(len(data_set))
     return indices
+
+
+def sigmoid(x: float) -> float:
+    return 1 / (1 + math.exp(-x))

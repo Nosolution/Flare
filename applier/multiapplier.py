@@ -1,7 +1,8 @@
 import random
 from collections import Counter
+from auxiliary.helper import sigmoid
 
-__all__ = ['MultiClassApplier', 'OvOApplier', 'OvRApplier', 'MvMApplier']
+__all__ = ['MultiClassApplier', 'OvOApplier', 'OvRApplier', 'MvMApplier', 'NNApplier']
 
 
 class MultiClassApplier(object):
@@ -14,6 +15,9 @@ class MultiClassApplier(object):
 
     def predict(self, x: list) -> int:
         return 0
+
+    def confidence(self, x: list) -> list:
+        return None
 
 
 class OvOApplier(MultiClassApplier):
@@ -73,3 +77,20 @@ class MvMApplier(MultiClassApplier):
                 min_d = d
                 index = k
         return self.codewords[index][1]
+
+
+class NNApplier(MultiClassApplier):
+    def confidence(self, x: list) -> list:
+        output_layer = self.model[3]
+        oh_weight = self.model[2]
+        hidden_layer = self.model[1]
+        hi_weight = self.model[0]
+
+        hidden_out = []
+        for h in range(len(hidden_layer)):
+            hidden_out.append(sigmoid(sum(map(lambda i: (x[i] * hi_weight[h][i] - hidden_layer[h]), range(len(x))))))
+        out = []
+        for j in range(len(output_layer)):
+            out.append(
+                sigmoid(sum(map(lambda h: hidden_out[h] * oh_weight[j][h] - output_layer[j], range(len(hidden_out))))))
+        return out
