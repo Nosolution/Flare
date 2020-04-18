@@ -196,6 +196,8 @@ def __get_measure_func(strat: int) -> Callable:
 
 
 def __can_distinguish(data_set: list, attrs: dict) -> bool:
+    if not attrs:
+        return False
     if __same_label(data_set):
         return True
     else:
@@ -206,11 +208,13 @@ def __can_distinguish(data_set: list, attrs: dict) -> bool:
                 same_flag = False
                 break
         # 或者是否属性已使用完
-        return not attrs or same_flag
+        return not same_flag
 
 
 def __judge_max_measure_i(data_set: list, attrs: dict, measure: Callable) -> Tuple[int, float]:
     final_i = 0
+    if attrs:
+        final_i = list(attrs.items())[0][0]
     final_mid = 0
     max_measure = 0
     # 判断收益最大的属性
@@ -241,7 +245,7 @@ def __judge_max_measure_i(data_set: list, attrs: dict, measure: Callable) -> Tup
 def __need_preprune(data_set: list, node: TreeNode, i: int, prepruner: Prepruner, **kwargs) -> bool:
     max_label = __max_label(data_set)
     tr = prepruner.test(node)
-    if kwargs['mid']:
+    if 'mid' in kwargs:
         leq_func = (lambda x: x[i] <= kwargs['mid'])
         gr_func = (lambda x: x[i] > kwargs['mid'])
         s1, s2 = __split(data_set, i, kwargs['mid'])
@@ -326,19 +330,21 @@ def __generate_tree(train_set: list, attrs: dict, strat: int, prepruner: Preprun
                 child.label = cur_max_label
                 node.children[0] = child
             else:
-                node.children[0] = __generate_tree(s1, attrs1, strat, prepruner.filtered(leq_func))
+                node.children[0] = __generate_tree(s1, attrs1, strat,
+                                                   prepruner.filtered(leq_func) if prepruner else None)
             if len(s2) == 0:
                 child = TreeNode()
                 child.label = cur_max_label
                 node.children[1] = child
             else:
-                node.children[1] = __generate_tree(s2, attrs2, strat, prepruner.filtered(gr_func))
+                node.children[1] = __generate_tree(s2, attrs2, strat, prepruner.filtered(gr_func) if prepruner else None)
     else:
         values = attrs[final_i][1]
         attrs.pop(final_i)  # 移除该属性
 
         if prepruner and __need_preprune(data_set=train_set, node=node, i=final_i, prepruner=prepruner,
                                          values=values):
+            # if (prepruner is not None) and False:
             node.label = cur_max_label
         else:
             value_counts = {}
@@ -355,7 +361,8 @@ def __generate_tree(train_set: list, attrs: dict, strat: int, prepruner: Preprun
                     child.label = __max_label(train_set)
                 else:
                     sub_set = value_counts[value]
-                    child = __generate_tree(sub_set, attrs.copy(), strat, prepruner.filtered(eq_func))
+                    child = __generate_tree(sub_set, attrs.copy(), strat,
+                                            prepruner.filtered(eq_func) if prepruner else None)
                 node.children[value] = child
     return node
 
@@ -379,7 +386,7 @@ def __control_generate_tree(train_set: list, attrs: dict, strat: int, prepruner:
         node, train_set, attrs, prepruner = node_queue.get()
         cur_max_label = __max_label(train_set)
 
-        if node.depth() == max_depth:  # 如果已经到达最大深度
+        if node.depth == max_depth:  # 如果已经到达最大深度
             node.label = cur_max_label
             continue
         else:
@@ -419,11 +426,11 @@ def __control_generate_tree(train_set: list, attrs: dict, strat: int, prepruner:
                     if len(s1) == 0:
                         left_child.label = cur_max_label
                     else:
-                        node_queue.put((left_child, s1, attrs1, prepruner.filtered(leq_func)))
+                        node_queue.put((left_child, s1, attrs1, prepruner.filtered(leq_func)) if prepruner else None)
                     if len(s2) == 0:
                         right_child.label = cur_max_label
                     else:
-                        node_queue.put((right_child, s2, attrs2, prepruner.filtered(gr_func)))
+                        node_queue.put((right_child, s2, attrs2, prepruner.filtered(gr_func)) if prepruner else None)
             else:
                 values = attrs[final_i][1]
                 attrs.pop(final_i)  # 移除该属性
@@ -447,7 +454,7 @@ def __control_generate_tree(train_set: list, attrs: dict, strat: int, prepruner:
                             child.label = __max_label(train_set)
                         else:
                             sub_set = value_counts[value]
-                            node_queue.put((sub_set, attrs.copy(), prepruner.filtered(eq_func)))
+                            node_queue.put((sub_set, attrs.copy(), prepruner.filtered(eq_func)) if prepruner else None)
 
     return root
 

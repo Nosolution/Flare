@@ -49,7 +49,19 @@ def sample3():
     tu.test(applier, handler.get_data_set())
 
 
+def sample4():
+    data_path = "lenses.txt"
+    handler = data_allocator.DataHandler(path=data_path, split_token="\t", dtype=data_allocator.any_type)
+    train_set, test_set = handler.split_tt_sets(0.7)
+    applier = decision_tree_trainer.train(train_set=train_set, preprune_test_set=test_set, max_depth=3)
+    # data_set = handler.get_data_set()
+    # applier = decision_tree_trainer.train(train_set=data_set)
+    applier.root.print()
+    tu = tester.TestUnit()
+    tu.test(applier, handler.get_data_set())
+
+
 # if __name__ == "__main__":
 # sample1()
 # sample2()
-sample3()
+sample4()

@@ -4,11 +4,11 @@ from algorithm.classify import *
 
 
 def train(train_set: list, attrs: dict = None, strategy: int = inf_ent_gain,
-          preprune_test_set: list = None):
+          preprune_test_set: list = None, max_depth: int = 0):
     if not attrs:
         attrs = get_all_attrs(train_set)
     return generate_tree(train_set, attrs, strategy,
-                         Prepruner(preprune_test_set) if preprune_test_set else None)
+                         Prepruner(preprune_test_set) if preprune_test_set else None, max_depth)
 
 
 def get_all_attrs(data_set: list) -> dict:
