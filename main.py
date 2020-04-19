@@ -57,11 +57,11 @@ def sample4():
     # applier = decision_tree_trainer.train(train_set=train_set, preprune_test_set=test_set)
     data_set = handler.get_data_set()
     applier = decision_tree_trainer.train(train_set=data_set)
-    applier.root.print()
-    print(applier.root.serialize())
+    # applier.root.print()
+    # print(applier.root.serialize())
     create_plot(applier.root)
-    # tu = tester.TestUnit()
-    # tu.test(applier, handler.get_data_set())
+    tu = tester.TestUnit()
+    tu.test(applier, handler.get_data_set())
 
 
 # if __name__ == "__main__":
