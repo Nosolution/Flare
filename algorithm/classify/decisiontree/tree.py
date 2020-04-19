@@ -131,6 +131,7 @@ class TreeNode(object):
         self.atype = 0  # 属性类型, 为real或者discrete
         self.standard = 0  # real类型需要的对比值
         self.depth = 0
+        self.height = 0
         self.children = {}  # 子节点
 
     def decide(self, x: list) -> Any:
@@ -167,6 +168,17 @@ class TreeNode(object):
                 for item in self.children.items():
                     print("  " * layer + "on ai:{}={}".format(self.ai, item[0]))
                     item[1].print(layer + 1)
+
+    def serialize(self):
+        if not self.children:
+            return self.label
+        else:
+            res = {}
+            children_dict = {}
+            for item in self.children.items():
+                children_dict[item[0]] = item[1].serialize()
+            res[self.ai] = children_dict
+            return res
 
 
 def __max_label(data_set: list) -> Any:
@@ -337,7 +349,8 @@ def __generate_tree(train_set: list, attrs: dict, strat: int, prepruner: Preprun
                 child.label = cur_max_label
                 node.children[1] = child
             else:
-                node.children[1] = __generate_tree(s2, attrs2, strat, prepruner.filtered(gr_func) if prepruner else None)
+                node.children[1] = __generate_tree(s2, attrs2, strat,
+                                                   prepruner.filtered(gr_func) if prepruner else None)
     else:
         values = attrs[final_i][1]
         attrs.pop(final_i)  # 移除该属性
